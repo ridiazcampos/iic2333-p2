@@ -644,9 +644,25 @@ while (1) {
           response_deal_message[5] = payload_server[5];
           while(response_deal_message[1] == 1)
           {
+            printf("Te ha llegado una contra oferta\n");
+            printf("El jugador %s te ofrece %i cantidad de %i recurso\n",response_deal_message[0], response_deal_message[3], response_deal_message[5]);
+            printf("El jugador %s te pide %i cantidad de %i recurso a cambio",response_deal_message[0], response_deal_message[2], response_deal_message[4])
+            printf("Estas son tus opciones: \n");
+            printf("[0] Aceptar\n");
+            printf("[1] Negociar\n");
+            printf("[2] Rechazar\n");
             
+            response_deal_message[1] = getchar() - '0';
+            response_deal_message[0] = id_negociar;
+            if(response_deal_message[1] = 1)
+            {
+              printf("¿Qué ofreces? \n>> ");
+              response_deal_message[2] = getchar() - '0';
+              printf("Cuánto ofreces? \n>> ");
+              response_deal_message[4] = getchar() - '0';
+              client_send_message(server_socket, 14, 56, response_deal_message);
+            }
           }
-
           break;
         
         case 9: // Rendirse
