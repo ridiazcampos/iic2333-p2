@@ -113,7 +113,7 @@ void* wait_connections(void * ARGS)
     release(lock);
     client_setting(array, 3, lock);
 
-    pthread_exit(0);
+    pthread_exit((void *) NULL);
 
 }
 

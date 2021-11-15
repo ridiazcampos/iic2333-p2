@@ -68,12 +68,12 @@ int main(int argc, char *argv[]){
     }
 
     // Se crea el servidor y se obtienen los sockets de ambos clientes.
-    pthread_t thread;
+    pthread_t* thread = malloc(sizeof(pthread_t));
     Lock* lock = malloc(sizeof(lock));
     lock->value = 0;
     socklen_t* addr_size = malloc(sizeof(socklen_t));
     Args* arguments = malloc(sizeof(Args));
-    Player** players_info = prepare_sockets_and_get_clients(IP, PORT, addr_size, &thread, lock, arguments);
+    Player** players_info = prepare_sockets_and_get_clients(IP, PORT, addr_size, thread, lock, arguments);
     // Le enviamos al primer cliente un mensaje de bienvenida
     //char * welcome = "Bienvenido Cliente 1!!";
     //server_send_message(players_info->socket_c1, 1, welcome);
@@ -157,11 +157,11 @@ int main(int argc, char *argv[]){
             {
                 // cancelar el thread corriendo
                 // Que comience el juego
-                int rc = pthread_cancel(thread);
+                int rc = pthread_cancel(*thread);
                 while (rc)
                 {
                     printf("%i\n", rc);
-                    rc = pthread_cancel(thread);
+                    rc = pthread_cancel(*thread);
                 }
                 char message[1];
                 message[0] = 0;
@@ -259,6 +259,7 @@ int main(int argc, char *argv[]){
             char message3[1];
             message3[0] = return_value;
             server_send_stdmessage(players_info, my_attention, 3, 1, &message3[0]);
+            free(client_payload);
         }
         else if (msg_code == 4)
         {
@@ -266,6 +267,7 @@ int main(int argc, char *argv[]){
             char message4[1];
             message4[0] = return_value;
             server_send_stdmessage(players_info, my_attention, 4, 1, &message4[0]);
+            free(client_payload);
         }
 
         else if (msg_code == 5) //Atacar
@@ -683,7 +685,7 @@ int main(int argc, char *argv[]){
             }
             if(response_deal_message[1] == 0) //Éxito en la negociacion
             {
-                finished_negociation(players_info[my_attention], players_info[client_payload], response_deal_message[2], response_deal_message[3], response_deal_message[4], response_deal_message[5]);
+                finished_negociation(players_info[my_attention], players_info[client_payload[0]], response_deal_message[2], response_deal_message[3], response_deal_message[4], response_deal_message[5]);
                 server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
             }
             if(response_deal_message[1] == 2) // Negociación rechazada
@@ -701,6 +703,7 @@ int main(int argc, char *argv[]){
     {
         player_destroy(players_info[i]);
     }
+    free(thread);
     free(players_info);
     free(addr_size);
     free(lock);

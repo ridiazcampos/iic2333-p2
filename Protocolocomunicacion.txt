@@ -37,7 +37,7 @@ ID  |   PayloadSize |   Payload |   Descripción
 12  |   len(nombre) |   NOMBRE1 + 0/1|  NOMBRE1 (0-> perdió, 1->se retiró, 2->ganó)
 13  |   0   |   0   |   Has ganado
 -------------------------------------------------------------------------------------------
-14  |   4 + 4 + 4*4 |   0/1/2/3 + 0/1/2/3 + 0/1/2/3 + N1 + 0/1/2/3 + N2   | 4.2 Negociar: id_usuario_a_negociar + aceptar/rechazar/modificar(ofertar) + tipo_a_recibir + cantidad + tipo_a_entregar + cantidad
+14  |   4 + 4 + 4*4 |   0/1/2/3 + 0/1/2/3 + 0/1/2/3 + N1 + 0/1/2/3 + N2   | 4.2 Negociar: id_usuario_a_negociar + aceptar/rechazar/modificar(ofertar) + tipo_a_recibir + cantidad + tipo_a_entregar + cantidad + nombre
 -------------------------------------------------------------------------------------------
 15  |       0       |       |   Indica que es el turno del jugador
 16  |   1*4         |   0 o 1 o 2 o 3   | Nuevas conexiones   
