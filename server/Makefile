@@ -1,4 +1,4 @@
 FILES := $(wildcard src/*.c)
 
 program: $(FILES)
-	gcc -o server $(FILES) -std=c11 -Wall -lm -pthread -I./src/
+	gcc -o server -ggdb3 $(FILES) -lm -pthread -I./src/

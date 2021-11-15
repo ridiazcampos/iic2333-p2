@@ -177,6 +177,5 @@ Player** prepare_sockets_and_get_clients(char * IP, int port, socklen_t* addr_si
         printf("ERROR; return code from pthread_create() is %d\n", rc);
         exit(-1);
     }
-
     return players;
 }

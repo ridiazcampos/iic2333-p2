@@ -255,3 +255,166 @@ int steal(Player* player, Player* player_robbed, int resource)
         return 0;
     }
 }
+
+int finished_negociation(Player* initial_player, Player* final_player, int resource_1, int quantity_1, int resource_2, int quantity_2)
+{
+    if (resource_1 == 0) // es oro
+    {
+        if (resource_2 == 0)
+        {
+            if (initial_player -> gold < quantity_1 || final_player -> gold < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> gold -= quantity_1;
+                initial_player -> gold += quantity_2;
+                final_player -> gold -= quantity_2;
+                final_player -> gold += quantity_1;
+                return 0; //Exito
+            }
+        }
+        if (resource_2 == 1)//es comida
+        {
+            if (initial_player -> gold < quantity_1 || final_player -> food < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> gold -= quantity_1;
+                initial_player -> food += quantity_2;
+                final_player -> food -= quantity_2;
+                final_player -> gold += quantity_1;
+                return 0; //Exito
+            }
+
+        }
+        if (resource_2 == 2) //es ciencia
+        {
+            if (initial_player -> gold < quantity_1 || final_player -> science < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> gold -= quantity_1;
+                initial_player -> science += quantity_2;
+                final_player -> science -= quantity_2;
+                final_player -> gold += quantity_1;
+                return 0; //Exito
+            }
+
+        }
+    }
+    if (resource_1 == 1) // es comida
+    {
+        if (resource_2 == 0)
+        {
+            if (initial_player -> food < quantity_1 || final_player -> gold < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> food -= quantity_1;
+                initial_player -> gold += quantity_2;
+                final_player -> gold -= quantity_2;
+                final_player -> food += quantity_1;
+                return 0; //Exito
+            } 
+        }
+        if (resource_2 == 1)//es comida
+        {
+            if (initial_player -> food < quantity_1 || final_player -> food < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> food -= quantity_1;
+                initial_player -> food += quantity_2;
+                final_player -> food -= quantity_2;
+                final_player -> food += quantity_1;
+                return 0; //Exito
+            }
+
+        }
+        if (resource_2 == 2) //es ciencia
+        {
+            if (initial_player -> food < quantity_1 || final_player -> science < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> food -= quantity_1;
+                initial_player -> science += quantity_2;
+                final_player -> science -= quantity_2;
+                final_player -> food += quantity_1;
+                return 0; //Exito
+            }
+
+        }
+    }
+    if (resource_1 == 2) // es ciencia
+    {
+        if (resource_2 == 0)
+        {
+            if (initial_player -> science < quantity_1 || final_player -> gold < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> science -= quantity_1;
+                initial_player -> gold += quantity_2;
+                final_player -> gold -= quantity_2;
+                final_player -> science += quantity_1;
+                return 0; //Exito
+            }
+        }
+        if (resource_2 == 1)//es comida
+        {
+            if (initial_player -> science < quantity_1 || final_player -> food < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> science -= quantity_1;
+                initial_player -> food += quantity_2;
+                final_player -> food -= quantity_2;
+                final_player -> science += quantity_1;
+                return 0; //Exito
+            }
+
+        }
+        if (resource_2 == 2) //es ciencia
+        {
+            if (initial_player -> science < quantity_1 || final_player -> science < quantity_2)
+            {
+                //Mandar señal de que no se puede
+                return 1; //Falló
+            }
+            else
+            {
+                initial_player -> science -= quantity_1;
+                initial_player -> science += quantity_2;
+                final_player -> science -= quantity_2;
+                final_player -> science += quantity_1;
+                return 0; //Exito
+            }
+
+        }
+    }
+}

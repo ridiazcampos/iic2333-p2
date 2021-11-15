@@ -167,11 +167,14 @@ while (1) {
   
   int msg_server = client_receive_id(server_socket);
   char* payload_server = client_receive_payload(server_socket);
-  printf("Presiona cualquier tecla para comenzar el juego \n>> ");
+  
 
 
   if (msg_server == 0 && (int) payload_server[0] == 1)
   {
+    printf("Eres el/la líder del juego!\n");
+    printf("¡Puedes empezar el juego o consultar estadísticas! \n");
+    printf("[0] Empezar juego \n[1] Estadísticas \n>>");
     free(payload_server);
     int started = 0;
 
@@ -200,9 +203,7 @@ while (1) {
 
  
       }
-      printf(">> \n");
       if (haveinput (STDIN_FILENO) == 1 ) {
-        printf("   ]\n");
         char buf[MAXC] = "";
         if (!fgets (buf, MAXC, stdin) || *buf == '0') { 
 
@@ -307,17 +308,31 @@ while (1) {
     printf("HAS GANADO!!! Eres un digno emperador de IkaRuz\n");
   }
 
+  if (msg_server == 14)
+  {
+    int resource = (int) payload_server[0];
+    int amount = (int) payload_server[1];
+    printf("Quieren negociar contigo\n");
+    printf("El jugador %s te ofrece %i cantidad de %i recurso\n");
+    printf("El jugador %s te pide %i cantidad de %i recurso a cambio")
+    printf("Estas son tus opciones: \n");
+    printf("[0] Aceptar\n");
+    printf("[1] Negociar\n");
+    printf("[2] Rechazar\n");
+  }
+
   if (msg_server == 15)
   {
     free(payload_server);
-    printf("¿Qué deseas hacer %s?\n1. Mostrar información \n2. Crear Aldeano\n3. Subir de nivel\n4. Atacar\n5. Espiar\n6. Robar\n7. Pasar\n8. Negociar\n9. Rendirse\n>> ", name);
+    printf("¿Qué deseas hacer %s?\n _________________________ \n|   |                     |\n| 1 | Mostrar información |\n| 2 | Crear Aldeano       |\n| 3 | Subir de nivel      |\n| 4 | Atacar              |\n| 5 | Espiar              |\n| 6 | Robar               |\n| 7 | Pasar               | \n| 8 | Negociar            |\n| 9 | Rendirse            |\n|___|_____________________|\n>> ", name);
     int option = getchar() - '0';
     getchar();
 
     switch (option)
     {
         case 1: // Mostrar información
-          printf("\nInformación de %s\n", name);
+          printf("\nInformación de %s: \n", name);
+          printf("\n");
           client_send_message(server_socket, 2, 0, (char*) NULL);
           msg_server = client_receive_id(server_socket);
           if (msg_server != 2)
@@ -325,21 +340,23 @@ while (1) {
             printf("CLIENT/MAIN212: Nunca deberíamos llegar aquí \n");
           }
           payload_server = client_receive_payload(server_socket);
-          printf("Tienes estos aldeanos en cada rol:\n");
-          printf("Granjeros: %i\n", (uint8_t) payload_server[0]);
-          printf("Mineros: %i\n", (uint8_t) payload_server[1]);
-          printf("Ingenieros: %i\n", (uint8_t) payload_server[2]);
-          printf("Guerreros: %i\n", (uint8_t) payload_server[3]);
-          printf("Tienes estos recursos:\n");
-          printf(" > Oro: %i\n", (uint8_t) payload_server[4]);
-          printf(" > Comida: %i\n", (uint8_t) payload_server[5]);
-          printf(" > Ciencia: %i\n", (uint8_t) payload_server[6]);
-          printf("Estos son los niveles de tus unidades: \n");
-          printf(" > Granjeros: %i\n", (uint8_t) payload_server[7]);
-          printf(" > Mineros: %i\n", (uint8_t) payload_server[8]);
-          printf(" > Ingenieros: %i\n", (uint8_t) payload_server[9]);
-          printf(" > Ataque: %i\n", (uint8_t) payload_server[10]);
-          printf(" > Defensa: %i\n\n", (uint8_t) payload_server[11]);
+          printf("   Tienes estos aldeanos en cada rol:\n");
+          printf("     > Granjeros:  %i\n", (uint8_t) payload_server[0]);
+          printf("     > Mineros:    %i\n", (uint8_t) payload_server[1]);
+          printf("     > Ingenieros: %i\n", (uint8_t) payload_server[2]);
+          printf("     > Guerreros:  %i\n", (uint8_t) payload_server[3]);
+          printf("\n");
+          printf("   Tienes estos recursos:\n");
+          printf("     > Oro:     %i\n", (uint8_t) payload_server[4]);
+          printf("     > Comida:  %i\n", (uint8_t) payload_server[5]);
+          printf("     > Ciencia: %i\n", (uint8_t) payload_server[6]);
+          printf("\n");
+          printf("   Estos son los niveles de tus unidades: \n");
+          printf("     > Granjeros:  %i\n", (uint8_t) payload_server[7]);
+          printf("     > Mineros:    %i\n", (uint8_t) payload_server[8]);
+          printf("     > Ingenieros: %i\n", (uint8_t) payload_server[9]);
+          printf("     > Ataque:     %i\n", (uint8_t) payload_server[10]);
+          printf("     > Defensa:    %i\n\n", (uint8_t) payload_server[11]);
           free(payload_server);
           break;
           
@@ -364,7 +381,8 @@ while (1) {
           }
           else if (create_villager_result == 1)
           {
-            printf("No tienes los recursos suficientes\n");
+            printf("[!] No tienes los recursos suficientes para crear este tipo de aldeano [!]\n");
+            printf("\n");
           }
           free(payload_server);
           break;
@@ -392,7 +410,8 @@ while (1) {
           }
           else if (level_up_result == 1)
           {
-            printf("No tienes los recursos suficientes\n");
+            printf("[!] No tienes los recursos suficientes para subir de nivel [!]\n");
+            printf("\n");
           }
           else if (level_up_result == 2)
           {
@@ -447,7 +466,8 @@ while (1) {
           }
           else if (attack_result == 2)
           {
-            printf("Diste una opción inválida:c\n");
+            printf("[!] Diste una opción inválida [!]\n");
+            printf("\n");
           }
           free(payload_server);
           free(name2);
@@ -498,11 +518,13 @@ while (1) {
           }
           else if (payload_server[0] == 1)
           {
-            printf("No tienes los recursos necesarios \n");
+            printf("[!] No tienes los recursos necesarios para espiar [!]\n");
+            printf("\n");
           }
           else
           {
-            printf("Has dado una opción inválida\n");
+            printf("[!] Has dado una opción inválida [!]\n");
+            printf("\n");
           }
           
           free(payload_server);
@@ -558,10 +580,12 @@ while (1) {
               printf("Robo realizado\n");
             }else if (steal_pkg_msg==1)
             {
-              printf("No tienes suficientes recursos para robar :(\n");
+              printf("[!] No tienes suficientes recursos para robar [!]\n");
+              printf("\n");
             }else
             {
-              printf("Opción Inválida\n");
+              printf("[!] Opción Inválida [!] \n");
+              printf("\n");
             }
             free(payload_server);
             free(name3);
@@ -573,8 +597,56 @@ while (1) {
           break;
 
         case 8: // Negociar
+          client_send_message(server_socket, 10, 0, (void*) NULL);
           printf("\n¿Con quién quieres negociar? \n>> ");
-          printf("¿Qué quieres negociar? \n>> ");
+          payload_server = client_receive_payload(server_socket);
+          char* name3 = malloc(50);
+          for (int i = 0; i <= 3; i++)
+          {
+            for (int j = 0; j < 50; j++)
+            { 
+              name3[j] = payload_server[12 + (50 * i) + j];
+            }
+            printf("[%i] %s \n", i + 1, name3);
+          }
+          free(payload_server);
+          int id_negociar = getchar() - '0';
+          printf("¿Qué quieres obtener? \n>> ");
+          int resource = getchar() - '0';
+          printf("¿Cuánto quieres obtener? \n>> ");
+          int q_resource = getchar() - '0';
+          printf("¿Qué ofreces? \n>> ");
+          int g_resource = getchar() - '0';
+          printf("Cuánto ofreces? \n>> ");
+          int q_g_resource = getchar() - '0';
+          char* deal_message= malloc(6);
+          deal_message[0] = id_negociar;
+          deal_message[1] = status;
+          deal_message[2] = resource;
+          deal_message[3] = q_resource;
+          deal_message[4] = g_resource;
+          deal_message[5] = q_g_resource;
+          client_send_message(server_socket, 10, 6, deal_message);
+          free(deal_message);
+        
+          msg_server = client_receive_id(server_socket);
+          if (msg_server != 14)
+          {
+            printf("CLIENTE/MAIN359: Nunca deberíamos llegar aquí \n");
+          }
+          payload_server = client_receive_payload(server_socket);
+          char* response_deal_message = malloc(6+50);
+          response_deal_message[0] = payload_server[0];
+          response_deal_message[1] = payload_server[1];
+          response_deal_message[2] = payload_server[2];
+          response_deal_message[3] = payload_server[3];
+          response_deal_message[4] = payload_server[4];
+          response_deal_message[5] = payload_server[5];
+          while(response_deal_message[1] == 1)
+          {
+            
+          }
+
           break;
         
         case 9: // Rendirse

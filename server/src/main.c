@@ -74,7 +74,6 @@ int main(int argc, char *argv[]){
     socklen_t* addr_size = malloc(sizeof(socklen_t));
     Args* arguments = malloc(sizeof(Args));
     Player** players_info = prepare_sockets_and_get_clients(IP, PORT, addr_size, &thread, lock, arguments);
-
     // Le enviamos al primer cliente un mensaje de bienvenida
     //char * welcome = "Bienvenido Cliente 1!!";
     //server_send_message(players_info->socket_c1, 1, welcome);
@@ -608,8 +607,91 @@ int main(int argc, char *argv[]){
             }
         }
 
-        else if (msg_code == 10)
+        else if (msg_code == 10) //Negociar
         {
+
+            free(client_payload);
+            char* message10 = malloc((12 + 4 * 50));
+            message10[0] = players_info[my_attention] -> farmers;
+            message10[1] = players_info[my_attention] -> miners;
+            message10[2] = players_info[my_attention] -> engineers;
+            message10[3] = players_info[my_attention] -> warriors;
+            message10[4] = players_info[my_attention] -> gold;
+            message10[5] = players_info[my_attention] -> food;
+            message10[6] = players_info[my_attention] -> science;
+            message10[7] = players_info[my_attention] -> farmers_level;
+            message10[8] = players_info[my_attention] -> miners_level;
+            message10[9] = players_info[my_attention] -> engineers_level;
+            message10[10] = players_info[my_attention] -> attack_level;
+            message10[11] = players_info[my_attention] -> defense_level;
+            for (int i = 0; i < 4; i++)
+            {
+                if (players_info[i] -> status == 1)
+                {
+                    for (int j = 0; j < 50; j++)
+                    {
+                        message10[12 + 50 * i + j] = players_info[i]->name[j];
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < 50; j++)
+                    {
+                        message10[12 + 50 * i + j] = '\0';
+                    }
+                }
+            }
+            server_send_stdmessage(players_info, my_attention, 2, 12 + 4 * 50, message10);
+            free(message10);
+
+            msg_code = server_receive_instruction(socket);
+            if (msg_code != 10)
+            {
+                printf("SERVER/MAIN650: Nunca deberiamos llegar aquí");
+            }
+            client_payload = server_receive_stdpayload(players_info, my_attention);
+            char* response_deal_message = malloc(6+50);
+            response_deal_message[0] = client_payload[0];
+            response_deal_message[1] = client_payload[1];
+            response_deal_message[2] = client_payload[2];
+            response_deal_message[3] = client_payload[3];
+            response_deal_message[4] = client_payload[4];
+            response_deal_message[5] = client_payload[5];
+            for (int i = 0; i < 50; i++)
+            {
+                response_deal_message[6+i] = players_info[my_attention]->name[i];
+            }
+            while(response_deal_message[1] == 1)
+            {
+                if(response_deal_message[0]==my_attention)
+                {
+                    response_deal_message[0] = my_attention;
+                    server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
+                }else
+                {
+                    response_deal_message[0] = client_payload[0];
+                    server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
+                }
+                msg_code = server_receive_instruction(socket);
+                client_payload = server_receive_stdpayload(players_info, my_attention);
+                response_deal_message[0] = client_payload[0];
+                response_deal_message[1] = client_payload[1];
+                response_deal_message[2] = client_payload[2];
+                response_deal_message[3] = client_payload[3];
+                response_deal_message[4] = client_payload[4];
+                response_deal_message[5] = client_payload[5];
+            }
+            if(response_deal_message[1] == 0) //Éxito en la negociacion
+            {
+                finished_negociation(players_info[my_attention], players_info[client_payload], response_deal_message[2], response_deal_message[3], response_deal_message[4], response_deal_message[5]);
+                server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
+            }
+            if(response_deal_message[1] == 2) // Negociación rechazada
+            {
+                server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
+            }
+            free(client_payload);
+            free(response_deal_message);
             
         }
 
@@ -619,11 +701,9 @@ int main(int argc, char *argv[]){
     {
         player_destroy(players_info[i]);
     }
-
     free(players_info);
     free(addr_size);
     free(lock);
     free(arguments);
-
     return 0;
 }
