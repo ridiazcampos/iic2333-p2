@@ -184,24 +184,57 @@ while (1) {
       // getchar() - '0';
       client_send_message(server_socket, 11, 0, (void*) NULL);
       msg_server = client_receive_id(server_socket);
+      if (msg_server == 2) {
+              
+              
+        char* msg_0 = client_receive_payload(server_socket);
+
+
+        // payload_server = client_receive_payload(server_socket);
+
+        char* name2 = malloc(50);
+        int name_found = -1;
+        for (int i = 0; i <= 3; i++)
+        {
+          for (int j = 0; j < 50; j++)
+          { 
+            name2[j] = msg_0[12 + (50 * i) + j];
+          }
+
+          if (name2[0] == '\0' && name_found == -1) {
+            name_found = i - 1;
+          }
+        }
+
+        for (int i = 0; i < 50; i++)
+          { 
+            name2[i] = msg_0[12 + (50 * name_found) + i];
+          }
+
+        printf("¡%s se ha unido al juego! \n>> ", name2);
+        
+        free(msg_0);
+      }
+      
+      else if (msg_server == 16) {
+        
       char* msg_0 = client_receive_payload(server_socket);
-      if ((int) msg_0[0] - 1 > n_players) {
+
+
+         if ((int) msg_0[0] - 1 > n_players) {
+
         printf("¡Nueva conexión! \n>> ");
         // AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        /*
-        client_send_message(server_socket, 5, 0, (char*) NULL);
-        msg_server = client_receive_id(server_socket);
-        if (msg_server != 2)
-          {
-            printf("CLIENTE/MAIN289: Nunca deberíamos llegar aquí \n");
-          }
-        
-        payload_server = client_receive_payload(server_socket);
-        */
+       
         // AAAAAAAAAAAAAAAAAAAAAAAAAAA
         n_players = (int) msg_0[0] - 1;
 
+        free(msg_0);
       }
+      }
+
+      
+
       if (haveinput (STDIN_FILENO) == 1 ) {
         char buf[MAXC] = "";
         if (!fgets (buf, MAXC, stdin) || *buf == '0') { 
@@ -210,7 +243,12 @@ while (1) {
           msg_server = client_receive_id(server_socket);
           if (msg_server != 1)
           {
-            printf("Cliente/MAIN157: Nunca deberíamos llegar aquí \n");
+            // printf("Cliente/MAIN157: Nunca deberíamos llegar aquí [%i] \n", msg_server);
+            client_receive_payload(server_socket);
+             msg_server = client_receive_id(server_socket);
+            // printf("Cliente/MAIN157: Nunca deberíamos llegar aquí [%i] \n", msg_server);
+
+
           }
           char* msg_0 = client_receive_payload(server_socket);
           if ((int) msg_0[0] == 0)
@@ -227,14 +265,13 @@ while (1) {
           }
         } 
         if (*buf == '1') {
-          printf("oli\n");
+          printf("\n>>");
         }
       } else { 
         fflush (stdout);
-        sleep(1);
+        // sleep(1);
       }
-      free(msg_0);
-    }
+     }
   }
 
   if (msg_server == 6)
