@@ -644,7 +644,6 @@ int main(int argc, char *argv[]){
                 }
             }
             server_send_stdmessage(players_info, my_attention, 2, 12 + 4 * 50, message10);
-            free(message10);
 
             msg_code = server_receive_instruction(socket);
             if (msg_code != 10)
@@ -652,6 +651,8 @@ int main(int argc, char *argv[]){
                 printf("SERVER/MAIN650: Nunca deberiamos llegar aquí");
             }
             client_payload = server_receive_stdpayload(players_info, my_attention);
+            
+            printf("SERVER:  %s empezó una negociación\n", players_info[my_attention]->name);
             char* response_deal_message = malloc(6+50);
             response_deal_message[0] = client_payload[0];
             response_deal_message[1] = client_payload[1];
@@ -667,29 +668,56 @@ int main(int argc, char *argv[]){
             {
                 if(response_deal_message[0]==my_attention)
                 {
-                    response_deal_message[0] = my_attention;
-                    server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
-                }else
-                {
+                    printf("SERVER: llegó una contraoferta de %s\n", players_info[client_payload[0]]->name);
                     response_deal_message[0] = client_payload[0];
                     server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
+                    socket = players_info[my_attention]->socket;
+                    msg_code = server_receive_instruction(socket);
+                    client_payload = server_receive_stdpayload(players_info, my_attention);
+                    printf("SERVER: llegó un mensaje %s\n", players_info[my_attention]->name);
+                    response_deal_message[0] = client_payload[0];
+                }else
+                {
+                    printf("SERVER: llegó una contraoferta de %s\n", players_info[my_attention]->name);
+                    response_deal_message[0] = my_attention;
+                    server_send_stdmessage(players_info, client_payload[0], 14, 56, response_deal_message);
+                    socket = players_info[client_payload[0]]->socket;
+                    msg_code = server_receive_instruction(socket);
+                    printf("Este es el codigo que tengo %i", msg_code);
+                    client_payload = server_receive_stdpayload(players_info, client_payload[0]);
+                    printf("SERVER: llegó un mensaje %s\n", players_info[client_payload[0]]->name);
+                    response_deal_message[0] = my_attention;
+
                 }
-                msg_code = server_receive_instruction(socket);
-                client_payload = server_receive_stdpayload(players_info, my_attention);
-                response_deal_message[0] = client_payload[0];
                 response_deal_message[1] = client_payload[1];
                 response_deal_message[2] = client_payload[2];
                 response_deal_message[3] = client_payload[3];
                 response_deal_message[4] = client_payload[4];
                 response_deal_message[5] = client_payload[5];
+                for (int i = 0; i < 50; i++)
+                {
+                    response_deal_message[6+i] = players_info[my_attention]->name[i];
+                }
             }
             if(response_deal_message[1] == 0) //Éxito en la negociacion
             {
-                finished_negociation(players_info[my_attention], players_info[client_payload[0]], response_deal_message[2], response_deal_message[3], response_deal_message[4], response_deal_message[5]);
-                server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
+                printf("SERVER: negociación\n");
+                printf("1 quiere: %i de %i, y ofrece %i de %i \n",response_deal_message[3] , response_deal_message[2], response_deal_message[5], response_deal_message[4]);
+            
+                int deal_result = finished_negociation(players_info[my_attention], players_info[client_payload[0]+1], response_deal_message[2], response_deal_message[3], response_deal_message[4], response_deal_message[5]);
+                printf("finished_negociation ready %i\n", deal_result);
+                if(deal_result == 1)
+                {
+                    response_deal_message[1] = 3;
+                    server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
+                }else if(deal_result == 0)
+                {
+                    server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
+                }
             }
             if(response_deal_message[1] == 2) // Negociación rechazada
             {
+                printf("SERVER: fallida\n");
                 server_send_stdmessage(players_info, my_attention, 14, 56, response_deal_message);
             }
             free(client_payload);

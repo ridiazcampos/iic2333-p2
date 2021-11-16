@@ -258,6 +258,7 @@ int steal(Player* player, Player* player_robbed, int resource)
 
 int finished_negociation(Player* initial_player, Player* final_player, int resource_1, int quantity_1, int resource_2, int quantity_2)
 {
+    printf("resource_1 = %i, resource_2 = %i, quantity_1 = %i, quantity_2 = %i", resource_1, resource_2, quantity_1, quantity_2);
     if (resource_1 == 0) // es oro
     {
         if (resource_2 == 0)
@@ -265,10 +266,12 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
             if (initial_player -> gold < quantity_1 || final_player -> gold < quantity_2)
             {
                 //Mandar señal de que no se puede
+                printf("No llegué");
                 return 1; //Falló
             }
             else
             {
+                printf("Llegue acá, %i, %i", quantity_1, quantity_2);               
                 initial_player -> gold -= quantity_1;
                 initial_player -> gold += quantity_2;
                 final_player -> gold -= quantity_2;
@@ -280,11 +283,13 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
         {
             if (initial_player -> gold < quantity_1 || final_player -> food < quantity_2)
             {
+                  printf("No llegue");
                 //Mandar señal de que no se puede
                 return 1; //Falló
             }
             else
             {
+                printf("Llegue acá, %i, %i", quantity_1, quantity_2);
                 initial_player -> gold -= quantity_1;
                 initial_player -> food += quantity_2;
                 final_player -> food -= quantity_2;
@@ -297,11 +302,14 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
         {
             if (initial_player -> gold < quantity_1 || final_player -> science < quantity_2)
             {
+                  printf("No llegue");
                 //Mandar señal de que no se puede
                 return 1; //Falló
             }
             else
             {
+                
+                                printf("Llegue acá, %i, %i", quantity_1, quantity_2);
                 initial_player -> gold -= quantity_1;
                 initial_player -> science += quantity_2;
                 final_player -> science -= quantity_2;
@@ -317,11 +325,14 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
         {
             if (initial_player -> food < quantity_1 || final_player -> gold < quantity_2)
             {
+                  printf("No llegue");
                 //Mandar señal de que no se puede
                 return 1; //Falló
             }
             else
             {
+                printf("Llegue acá, %i, %i", quantity_1, quantity_2);
+
                 initial_player -> food -= quantity_1;
                 initial_player -> gold += quantity_2;
                 final_player -> gold -= quantity_2;
@@ -333,11 +344,14 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
         {
             if (initial_player -> food < quantity_1 || final_player -> food < quantity_2)
             {
+                  printf("No llegue");
                 //Mandar señal de que no se puede
                 return 1; //Falló
             }
             else
             {
+                printf("Llegue acá, %i, %i", quantity_1, quantity_2);
+
                 initial_player -> food -= quantity_1;
                 initial_player -> food += quantity_2;
                 final_player -> food -= quantity_2;
@@ -351,10 +365,13 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
             if (initial_player -> food < quantity_1 || final_player -> science < quantity_2)
             {
                 //Mandar señal de que no se puede
+                printf("No llegué");
                 return 1; //Falló
             }
             else
             {
+                printf("Llegue acá, %i, %i", quantity_1, quantity_2);
+    
                 initial_player -> food -= quantity_1;
                 initial_player -> science += quantity_2;
                 final_player -> science -= quantity_2;
@@ -370,11 +387,13 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
         {
             if (initial_player -> science < quantity_1 || final_player -> gold < quantity_2)
             {
+                  printf("No llegue");
                 //Mandar señal de que no se puede
                 return 1; //Falló
             }
-            else
+            else    
             {
+                printf("Llegue acá, %i, %i", quantity_1, quantity_2);
                 initial_player -> science -= quantity_1;
                 initial_player -> gold += quantity_2;
                 final_player -> gold -= quantity_2;
@@ -386,11 +405,13 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
         {
             if (initial_player -> science < quantity_1 || final_player -> food < quantity_2)
             {
+                  printf("No llegue");
                 //Mandar señal de que no se puede
                 return 1; //Falló
             }
             else
             {
+                printf("Llegue acá, %i, %i", quantity_1, quantity_2);
                 initial_player -> science -= quantity_1;
                 initial_player -> food += quantity_2;
                 final_player -> food -= quantity_2;
@@ -403,11 +424,13 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
         {
             if (initial_player -> science < quantity_1 || final_player -> science < quantity_2)
             {
+                  printf("No llegue");
                 //Mandar señal de que no se puede
                 return 1; //Falló
             }
             else
             {
+                printf("Llegue acá, %i, %i", quantity_1, quantity_2);
                 initial_player -> science -= quantity_1;
                 initial_player -> science += quantity_2;
                 final_player -> science -= quantity_2;
@@ -416,5 +439,9 @@ int finished_negociation(Player* initial_player, Player* final_player, int resou
             }
 
         }
+    }
+    else
+    {
+        printf("XD");
     }
 }

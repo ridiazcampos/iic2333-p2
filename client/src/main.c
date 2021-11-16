@@ -314,25 +314,35 @@ while (1) {
     {
       player_name[i] = payload_server[6+i];
     }
-    int status = payload_server[1];
+    int status = (int) payload_server[1];
     int resource_asked = (int) payload_server[2];
     int amount_asked = (int) payload_server[3];
     int resource_offered = (int) payload_server[4];
     int amount_offered = (int) payload_server[5];
     printf("Quieren negociar contigo\n");
-    printf("El jugador %s te ofrece %i cantidad de %i recurso\n", player_name, resource_asked, amount_asked);
-    printf("El jugador %s te pide %i cantidad de %i recurso a cambio", player_name, resource_offered, amount_offered);
+    printf("%s te pide %i cantidad de %i recurso\n", player_name, resource_asked, amount_asked);
+    printf("%s te ofrece %i cantidad de %i recurso a cambio", player_name, resource_offered, amount_offered);
     printf("Estas son tus opciones: \n");
     printf("[0] Aceptar\n");
     printf("[1] Negociar\n");
     printf("[2] Rechazar\n");
     status = getchar() - '0';
-    if(status = 1)
+    getchar();
+    if(status == 1)
     {
-      printf("¿Qué ofreces? \n>> ");
+      printf("¿Qué recurso quieres? \n[0] Oro\n [1] comida\n [2] ciencia\n>> ");
       resource_offered = getchar() - '0';
-      printf("Cuánto ofreces? \n>> ");
+      getchar();
+      printf("Cuánto quieres? \n>> ");
       amount_offered = getchar() - '0';
+      getchar();
+      printf("¿Qué recurso ofreces? \n [0] Oro\n [1] comida\n [2] ciencia\n>> ");
+      resource_asked = getchar() - '0';
+      getchar();
+      printf("Cuánto ofreces? \n>> ");
+      amount_asked = getchar() - '0';
+      getchar();
+      printf("Se construye el mensaje\n");
       char* response_14 = malloc(56);
       response_14[0] = payload_server[0];
       response_14[1] = status;
@@ -340,8 +350,47 @@ while (1) {
       response_14[3] = amount_asked;
       response_14[4] = resource_offered;
       response_14[5] = amount_offered;
-      client_send_message(server_socket, 14, 56, (void*) NULL);
-      free(response_14);
+      for(int i = 0; i < 50; i++)
+      {
+        response_14[6+i] = player_name[i];
+      }
+      printf("Se envia el mensaje 1\n");
+      client_send_message(server_socket, 14, 56, response_14);
+      printf("Se envió el mensaje 1\n");
+    }else if(status == 0)
+    {
+      char* response_14 = malloc(56);
+      response_14[0] = payload_server[0];
+      response_14[1] = status;
+      response_14[2] = resource_asked;
+      response_14[3] = amount_asked;
+      response_14[4] = resource_offered;
+      response_14[5] = amount_offered;
+      for(int i = 0; i < 50; i++)
+      {
+        response_14[6+i] = player_name[i];
+      }
+      
+      printf("Se envia el mensaje 0\n");
+      client_send_message(server_socket, 14, 56, response_14);
+      printf("Se envió el mensaje 0\n");
+    }else if(status == 2)
+    {
+      char* response_14 = malloc(56);
+      response_14[0] = payload_server[0];
+      response_14[1] = status;
+      response_14[2] = resource_asked;
+      response_14[3] = amount_asked;
+      response_14[4] = resource_offered;
+      response_14[5] = amount_offered;
+      for(int i = 0; i < 50; i++)
+      {
+        response_14[6+i] = player_name[i];
+      }
+
+      printf("Se envia el mensaje 2\n");
+      client_send_message(server_socket, 14, 56, response_14);
+      printf("Se envió el mensaje 2\n");
     }
     free(player_name);
   }
@@ -623,6 +672,12 @@ while (1) {
 
         case 8: // Negociar
           client_send_message(server_socket, 10, 0, (void*) NULL);
+
+          msg_server = client_receive_id(server_socket);
+          if (msg_server != 2)
+          {
+            printf("CLIENTE/MAIN289: Nunca deberíamos llegar aquí \n");
+          }
           printf("\n¿Con quién quieres negociar? \n>> ");
           payload_server = client_receive_payload(server_socket); //Error
           char* name7 = malloc(50);
@@ -636,15 +691,20 @@ while (1) {
           }
           free(payload_server);
           int id_negociar = getchar() - '0';
+          getchar();
           id_negociar -= 1;
-          printf("¿Qué quieres obtener? \n>> ");
-          int resource2 = getchar() - '0'; //Ignora este getchar
+          printf("¿Qué quieres obtener? \n [0] Oro\n [1] comida\n [2] ciencia\n >> ");
+          int resource2 = getchar() - '0'; 
+          getchar();
           printf("¿Cuánto quieres obtener? \n>> ");
           int q_resource = getchar() - '0';
-          printf("¿Qué ofreces? \n>> ");
-          int g_resource = getchar() - '0'; //Ignora este getchar
+          getchar();
+          printf("¿Qué ofreces? \n[0] Oro\n [1] comida\n [2] ciencia \n>> ");
+          int g_resource = getchar() - '0';
+          getchar();
           printf("Cuánto ofreces? \n>> ");
           int q_g_resource = getchar() - '0';
+          getchar();
           char* deal_message= malloc(6);
           deal_message[0] = id_negociar;
           deal_message[1] = 1;
@@ -668,25 +728,45 @@ while (1) {
           response_deal_message[3] = payload_server[3];
           response_deal_message[4] = payload_server[4];
           response_deal_message[5] = payload_server[5];
+          for (int i = 0; i < 50; i++)
+          {
+            response_deal_message[6+i] = payload_server[6+i];
+          }
           while(response_deal_message[1] == 1)
           {
             printf("Te ha llegado una contra oferta\n");
-            printf("El jugador %s te ofrece %i cantidad de %i recurso\n",&response_deal_message[6], response_deal_message[3], response_deal_message[5]);
-            printf("El jugador %s te pide %i cantidad de %i recurso a cambio",&response_deal_message[6], response_deal_message[2], response_deal_message[4]);
+            printf("%s te ofrece %i cantidad de %i recurso\n",&response_deal_message[6], response_deal_message[3], response_deal_message[5]);
+            printf("%s te pide %i cantidad de %i recurso a cambio\n",&response_deal_message[6], response_deal_message[2], response_deal_message[4]);
             printf("Estas son tus opciones: \n");
             printf("[0] Aceptar\n");
             printf("[1] Negociar\n");
             printf("[2] Rechazar\n");
             
             response_deal_message[1] = getchar() - '0';
+            getchar();
             response_deal_message[0] = id_negociar;
-            if(response_deal_message[1] = 1)
+            if(response_deal_message[1] == 1)
             {
-              printf("¿Qué ofreces? \n>> ");
+              printf("¿Qué recurso quieres? \n[0] Oro\n [1] comida\n [2] ciencia\n\n>> ");
               response_deal_message[2] = getchar() - '0';
-              printf("Cuánto ofreces? \n>> ");
+              getchar(); 
+              printf("¿Cuánto quieres? \n>> ");
+              response_deal_message[3] = getchar() - '0';
+              getchar();
+              printf("¿Qué recurso ofreces? \n[0] Oro\n [1] comida\n [2] ciencia\n\n>> ");
               response_deal_message[4] = getchar() - '0';
-              client_send_message(server_socket, 14, 56, response_deal_message);
+              getchar(); 
+              printf("¿Cuánto ofreces? \n>> ");
+              response_deal_message[5] = getchar() - '0';
+              getchar();
+              client_send_message(server_socket, 10, 56, response_deal_message);
+            }else if(response_deal_message[1] == 0)
+            {
+              client_send_message(server_socket, 10, 56, response_deal_message);
+            }else{
+              printf("NEGOCIACIÓN RECHAZADA\n");
+              client_send_message(server_socket, 10, 56, response_deal_message);
+
             }
         
             msg_server = client_receive_id(server_socket);
@@ -706,9 +786,14 @@ while (1) {
       
           if(response_deal_message[1] == 0)
           {
-            printf("NEGOCIACIÓN ACEPTADA");
-          }else{
-            printf("NEGOCIACIÓN RECHAZADA");
+            printf("NEGOCIACIÓN ACEPTADA\n");
+          }
+          else if (response_deal_message[1] == 3)
+          {
+            printf("No se puede realizar la negociación por falta de recursos\n");
+          }
+          else{
+            printf("NEGOCIACIÓN RECHAZADA\n");
           }
           free(payload_server);
           

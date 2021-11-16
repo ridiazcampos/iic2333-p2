@@ -39,3 +39,4 @@ int create_villager(Player* player, int option);
 void player_destroy(Player* player);
 int attack(Player* attacker, Player* defender);
 int steal(Player* player, Player* player_robbed, int resource);
+int finished_negociation(Player* initial_player, Player* final_player, int resource_1, int quantity_1, int resource_2, int quantity_2);
