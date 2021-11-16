@@ -61,6 +61,40 @@ void client_setting(Player** players, int player, Lock* lock)
         set_player(players[player], name, farmers, miners, engineers,
                 warriors, 0, 0, 0, 1, 
                 1, 1, 1, 1);
+
+        char* message = malloc((12 + 4 * 50));
+        message[0] = players[0] -> farmers;
+        message[1] = players[0] -> miners;
+        message[2] = players[0] -> engineers;
+        message[3] = players[0] -> warriors;
+        message[4] = players[0] -> gold;
+        message[5] = players[0] -> food;
+        message[6] = players[0] -> science;
+        message[7] = players[0] -> farmers_level;
+        message[8] = players[0] -> miners_level;
+        message[9] = players[0] -> engineers_level;
+        message[10] = players[0] -> attack_level;
+        message[11] = players[0] -> defense_level;
+        for (int i = 0; i < 4; i++)
+        {
+            if (players[i] -> status == 1)
+            {
+                for (int j = 0; j < 50; j++)
+                {
+                    message[12 + 50 * i + j] = players[i]->name[j];
+                }
+            }
+            else
+            {
+                for (int j = 0; j < 50; j++)
+                {
+                    message[12 + 50 * i + j] = '\0';
+                }
+            }
+        }
+        server_send_stdmessage(players, 0, 2, 12 + 4 * 50, &message[0]);
+        free(message);
+
         free(name);
         free(payload);
         release(lock);
