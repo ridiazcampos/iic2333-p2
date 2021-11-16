@@ -148,7 +148,7 @@ void* wait_connections(void * ARGS)
     client_setting(array, 3, lock);
 
     pthread_exit((void *) NULL);
-
+    pthread_detach(pthread_self());
 }
 
 

@@ -214,6 +214,7 @@ while (1) {
         printf("¡%s se ha unido al juego! \n>> ", name2);
         
         free(msg_0);
+        free(name2);
       }
       
       else if (msg_server == 16) {
@@ -229,8 +230,8 @@ while (1) {
         // AAAAAAAAAAAAAAAAAAAAAAAAAAA
         n_players = (int) msg_0[0] - 1;
 
-        free(msg_0);
       }
+      free(msg_0);
       }
 
       
@@ -244,8 +245,9 @@ while (1) {
           if (msg_server != 1)
           {
             // printf("Cliente/MAIN157: Nunca deberíamos llegar aquí [%i] \n", msg_server);
-            client_receive_payload(server_socket);
+            char* algo = client_receive_payload(server_socket);
              msg_server = client_receive_id(server_socket);
+             free(algo);
             // printf("Cliente/MAIN157: Nunca deberíamos llegar aquí [%i] \n", msg_server);
 
 
@@ -263,6 +265,7 @@ while (1) {
           {
             printf("No hay más jugadores en la partida, espera a que se unan más jugadores para iniciar la partida. \n>> ");
           }
+          free(msg_0);
         } 
         if (*buf == '1') {
           printf("\n>>");
